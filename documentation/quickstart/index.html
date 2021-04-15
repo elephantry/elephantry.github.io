@@ -1,0 +1,714 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Elephantry - When Rust meets PostgreSQL</title>
+        <link rel="icon" type="image/png" href="https://elephantry.github.io/favicon.ico" sizes="32x32" />
+        <link href="https://elephantry.github.io/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://elephantry.github.io/site.css"/>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand" href="https://elephantry.github.io">Elephantry</a>
+
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://elephantry.github.io/documentation">Docs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link ext" target="_blank" href="https://docs.rs/elephantry/">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link ext" target="_blank" href="https://github.com/elephantry/elephantry">Code</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main">
+            
+<div class="documentation">
+    <aside class="sidebar">
+        <ul>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#what-s-elephantry">What’s elephantry?</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#setting">Setting</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#connection">Connection</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#querying">Querying</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#entity">Entity</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#modification">Modification</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#additional-informations">Additional informations</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#complex-requests">Complex requests</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#relationships">Relationships</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#composite-type">Composite type</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#async">Async</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#transaction">Transaction</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#notification">Notification</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/quickstart/#more">More</a>
+                </li>
+            
+        </ul>
+    </aside>
+
+    <div class="container">
+        <h1 id="what-s-elephantry">What’s elephantry?</h1>
+<p>Elephantry is an OMM, object model manager, a tool to interact with a database
+like an ORM but with an opposite philosophy.</p>
+<p>In both cases, the goal is to make the link between a database and its
+relational model and your application using the object paradigm.</p>
+<p>The ORM approach consists in mapping the relational model in the object world
+and making your code the reference to design the database.</p>
+<p>In addition, ORM comes with an abstraction layer (DBAL) that allows you to
+transparently use multiple databases. As a result, they have to limit themselves
+to the database with the least functionality. The <a href="https://modern-sql.com">SQL
+evolves</a> and you miss out on many features that
+can help you solve your problems effectively.</p>
+<p>An OMM lets the database manage what it can do best, and takes care of
+presenting to your application easily manipulated data as simple objects.
+The OMM is a simple convertion layer and will help you by avoiding writing
+the simplest queries (insert, update and delete) as an ORM but let you writing
+more complex queries without overhead.</p>
+<p><img src="https://elephantry.github.io/documentation/quickstart/orm-omm.png" alt="Comparing ORM and OMM philosophy" /></p>
+<p>The first consequence of this is a much simpler tool. As a
+comparison <a href="https://www.doctrine-project.org/projects/orm.html">doctrine</a>
+(the most popular ORM in the PHP ecosystem) includes 230,850 lines of code
+compared to 24,906 for <a href="http://www.pomm-project.org">POMM</a><sup class="footnote-reference"><a href="#1">1</a></sup>.</p>
+<p>The second consequence you’ll unleashed the power of SQL and using all of its
+power.</p>
+<p>A OMM puts the database back at the heart of data management and not just an
+object persistent layer.</p>
+<p>If you want to read more about the difference between ORM and OMM, you can read
+<a href="http://www.pomm-project.org/news/why-pomm.html">Why Pomm?</a></p>
+<p>Or if you prefer a video, you can see <a href="https://www.youtube.com/watch?v=l0IY0vO07zQ">Unleash Postgresql features in your PHP
+developments</a>.</p>
+<h1 id="setting">Setting</h1>
+<p>This paradigm change involves we should start by design our database instead of
+our objects.</p>
+<p><img src="https://elephantry.github.io/documentation/quickstart/elcaro.db.png" alt="database schema" /></p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f92672;">create table </span><span style="color:#a6e22e;">department</span><span style="color:#f8f8f2;"> (
+    department_id </span><span style="font-style:italic;color:#66d9ef;">serial </span><span style="color:#f92672;">primary key</span><span style="color:#f8f8f2;">,
+    name </span><span style="font-style:italic;color:#66d9ef;">text </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null</span><span style="color:#f8f8f2;">,
+    parent_id </span><span style="font-style:italic;color:#66d9ef;">integer </span><span style="color:#f92672;">references</span><span style="color:#f8f8f2;"> department (department_id)
+);
+
+</span><span style="color:#f92672;">create table </span><span style="color:#a6e22e;">employee</span><span style="color:#f8f8f2;"> (
+    employee_id </span><span style="font-style:italic;color:#66d9ef;">serial </span><span style="color:#f92672;">primary key</span><span style="color:#f8f8f2;">,
+    first_name </span><span style="font-style:italic;color:#66d9ef;">text </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null</span><span style="color:#f8f8f2;">,
+    last_name  </span><span style="font-style:italic;color:#66d9ef;">text </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null</span><span style="color:#f8f8f2;">,
+    birth_date </span><span style="font-style:italic;color:#66d9ef;">date </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null </span><span style="color:#f92672;">check</span><span style="color:#f8f8f2;"> (age(birth_date) </span><span style="color:#f92672;">&gt;= </span><span style="color:#e6db74;">&#39;18 years&#39;</span><span style="color:#f8f8f2;">::interval),
+    is_manager </span><span style="font-style:italic;color:#66d9ef;">boolean </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null </span><span style="color:#f92672;">default </span><span style="color:#f8f8f2;">false,
+    day_salary </span><span style="font-style:italic;color:#66d9ef;">numeric</span><span style="color:#f8f8f2;">(</span><span style="color:#ae81ff;">7</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">2</span><span style="color:#f8f8f2;">) </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null</span><span style="color:#f8f8f2;">,
+    department_id </span><span style="font-style:italic;color:#66d9ef;">integer </span><span style="color:#f92672;">not </span><span style="color:#ae81ff;">null </span><span style="color:#f92672;">references</span><span style="color:#f8f8f2;"> department (department_id)
+);
+</span></code></pre>
+<p>See the <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/structure.sql">structure.sql</a> file for complete source with data
+sample.</p>
+<h1 id="connection">Connection</h1>
+<p>First of all, it is necessary to connect to the database. In a very classical
+way, this is done thanks to its URL:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> database_url </span><span style="color:#f92672;">= </span><span style="color:#f8f8f2;">std::env::var(</span><span style="color:#e6db74;">&quot;DATABASE_URL&quot;</span><span style="color:#f8f8f2;">)
+    .</span><span style="color:#66d9ef;">expect</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;DATABASE_URL must be set&quot;</span><span style="color:#f8f8f2;">);
+</span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> elephantry </span><span style="color:#f92672;">= </span><span style="color:#f8f8f2;">elephantry::Pool::new(</span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">database_url)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>If you prefer the legacy way (like <code>psql</code>), you can use
+<code>elephantry::Pool::from_config</code>:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> elephantry </span><span style="color:#f92672;">= </span><span style="color:#f8f8f2;">elephantry::Pool::from_config(</span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">elephantry::Config::default())</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p><code>elephantry::Config</code> discorvers missing parameters from environment variables
+(<code>PGUSER</code>, <code>PGHOST</code>, <code>PGDATABASE</code>, <code>PGPORT</code> and <code>PGPASSWORD</code>) and <code>PGPASSFILE</code>
+file.</p>
+<p>You can see the
+<a href="https://github.com/sanpii/explain/blob/1.2.0/src/main.rs#L106-L108">explain code
+source</a><sup class="footnote-reference"><a href="#2">2</a></sup> to
+see an example how to use this with <code>structopt</code> (it’s easy like impl the <code>Into</code>
+trait).</p>
+<p>You can also use the <a href="https://crates.io/crates/config">config</a> crate (by
+enabling the <code>config-support</code> feature) to use this layered configuration system
+to easily build an <code>elephantry::Config</code> object. See
+<a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/00-config.rs">00-config.rs</a>.</p>
+<blockquote>
+<p>To help your sysadmin to investage about performance issues, I recommand to
+set the <a href="https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME">application
+name</a>
+in the connection parameter:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> elephantry </span><span style="color:#f92672;">= </span><span style="color:#f8f8f2;">elephantry::Pool::new(</span><span style="color:#e6db74;">&quot;postgresql://127.0.0.1/db?application_name=app-name&quot;</span><span style="color:#f8f8f2;">)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>This is usefull in
+<a href="https://pgbadger.darold.net/samplev7.html#queries-by-application">pgbadger</a>
+for example.</p>
+</blockquote>
+<h1 id="querying">Querying</h1>
+<h2 id="primitive-types">Primitive types</h2>
+<p>From there, it is already possible to make simple queries and get the results
+autautomatically typed in rust:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> results </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.</span><span style="color:#66d9ef;">execute</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;select * from department&quot;</span><span style="color:#f8f8f2;">)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+
+</span><span style="color:#f92672;">for</span><span style="color:#f8f8f2;"> result </span><span style="color:#f92672;">in &amp;</span><span style="color:#f8f8f2;">results {
+    </span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> name: </span><span style="font-style:italic;color:#66d9ef;">String </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> result.</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;name&quot;</span><span style="color:#f8f8f2;">);
+    println!(</span><span style="color:#e6db74;">&quot;</span><span style="color:#ae81ff;">{}</span><span style="color:#e6db74;">&quot;</span><span style="color:#f8f8f2;">, name);
+}
+</span></code></pre>
+<p>Simple, isn’t it? To avoid panic if the field does not exist, it’s a good idea
+to use the <code>Tupple::try_get</code> function:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> missing_field: </span><span style="font-style:italic;color:#66d9ef;">i32 </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> results.</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#ae81ff;">0</span><span style="color:#f8f8f2;">).</span><span style="color:#66d9ef;">try_get</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;missing_field&quot;</span><span style="color:#f8f8f2;">)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>The <code>Rows::get</code> function allows you to retrieve a result line without going
+through all records<sup class="footnote-reference"><a href="#3">3</a></sup>.</p>
+<p>Similarly if the field is <code>null</code> (because <code>null</code> can’t be transformed to <code>i32</code>):</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> parent_id: </span><span style="font-style:italic;color:#66d9ef;">i32 </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> results.</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#ae81ff;">0</span><span style="color:#f8f8f2;">).</span><span style="color:#66d9ef;">try_get</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;parent_id&quot;</span><span style="color:#f8f8f2;">)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>In this case, it is possible to use the <code>Option</code> type:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> parent_id: </span><span style="font-style:italic;color:#66d9ef;">Option</span><span style="color:#f8f8f2;">&lt;</span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">&gt; </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> results.</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#ae81ff;">0</span><span style="color:#f8f8f2;">).</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;parent_id&quot;</span><span style="color:#f8f8f2;">);
+</span></code></pre>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/01-execute.rs">01-execute.rs</a>.</p>
+<h1 id="entity">Entity</h1>
+<p>Now that we’ve seen how to pick up simple guys, it’s possible to go further to
+directly retrieve an entity as a structure. To do this, our structure must
+implement the <code>elephantry::Entity</code> trait, to help you with this repetitive work,
+you can use the <code>elephantry::Entity</code> derive macro:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">mod </span><span style="color:#f8f8f2;">employee {
+    #[derive(Debug, elephantry::Entity)]
+    </span><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Entity {
+        employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+        first_name: String,
+        last_name: String,
+        birth_date: chrono::NaiveDate,
+        is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+        day_salary: bigdecimal::BigDecimal,
+        department_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    }
+}
+</span></code></pre>
+<p>Thanks to this, you can use the <code>Connection::query</code> function which allows you to
+directly retrieve entities:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> employees </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.query::&lt;employee::Entity&gt;(
+    </span><span style="color:#e6db74;">&quot;select * from employee&quot;</span><span style="color:#f8f8f2;">,
+    </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[],
+)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+
+</span><span style="color:#f92672;">for</span><span style="color:#f8f8f2;"> employee </span><span style="color:#f92672;">in</span><span style="color:#f8f8f2;"> employees {
+    dbg!(employee);
+}
+</span></code></pre>
+<p>The second parameter of the <code>Connection::query</code> function allows you to pass
+parameters to our query, for example to retrieve a record with its id:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> employees </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.query::&lt;employee::Entity&gt;(
+    </span><span style="color:#e6db74;">&quot;select * from employee where is_manager = $1&quot;</span><span style="color:#f8f8f2;">,
+    </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[</span><span style="color:#f92672;">&amp;</span><span style="color:#ae81ff;">true</span><span style="color:#f8f8f2;">],
+)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<blockquote>
+<p>If you’re tired of numbering parameters, you can use the <code>$*</code> placeholder.</p>
+</blockquote>
+<p>This saves you from having to pay attention to special characters and protects
+you against SQL injections.</p>
+<p>Simple types already implement the <code>Entity</code> tray, that imply if your
+query returns one column, you can simply get its.</p>
+<p>In addition, if you are only interested by the first row, you can use
+<code>Connection::query_one</code>.</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> total_salary </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.query_one::&lt;bigdecimal::BigDecimal&gt;(</span><span style="color:#e6db74;">&quot;select sum(day_salary) from employee&quot;</span><span style="color:#f8f8f2;">, </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[])</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/02-query.rs">02-query.rs</a>.</p>
+<h2 id="model">Model</h2>
+<p>We now come to the heart of the OMM principle with the trio
+entity/model/structure that will allow us to make the link between a table of
+our database and our entity, while maintaining a certain amount of flexibility.</p>
+<p>We have already seen the entities that will contain our data.</p>
+<p>The <code>elephantry::Structure</code> trait will contain the information about a table:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Structure;
+
+</span><span style="font-style:italic;color:#66d9ef;">impl </span><span style="color:#f8f8f2;">elephantry::Structure </span><span style="color:#f92672;">for </span><span style="color:#f8f8f2;">Structure {
+    </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">relation</span><span style="color:#f8f8f2;">() -&gt; </span><span style="color:#f92672;">&amp;&#39;static </span><span style="font-style:italic;color:#66d9ef;">str </span><span style="color:#f8f8f2;">{
+        </span><span style="color:#e6db74;">&quot;public.employee&quot;
+    </span><span style="color:#f8f8f2;">}
+
+    </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">primary_key</span><span style="color:#f8f8f2;">() -&gt; </span><span style="color:#f92672;">&amp;&#39;static </span><span style="color:#f8f8f2;">[</span><span style="color:#f92672;">&amp;&#39;static </span><span style="font-style:italic;color:#66d9ef;">str</span><span style="color:#f8f8f2;">] {
+        </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[</span><span style="color:#e6db74;">&quot;employee_id&quot;</span><span style="color:#f8f8f2;">]
+    }
+
+    </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">columns</span><span style="color:#f8f8f2;">() -&gt; </span><span style="color:#f92672;">&amp;&#39;static </span><span style="color:#f8f8f2;">[</span><span style="color:#f92672;">&amp;&#39;static </span><span style="font-style:italic;color:#66d9ef;">str</span><span style="color:#f8f8f2;">] {
+        </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[
+            </span><span style="color:#e6db74;">&quot;employee_id&quot;</span><span style="color:#f8f8f2;">,
+            </span><span style="color:#e6db74;">&quot;first_name&quot;</span><span style="color:#f8f8f2;">,
+            </span><span style="color:#e6db74;">&quot;last_name&quot;</span><span style="color:#f8f8f2;">,
+            </span><span style="color:#e6db74;">&quot;birth_date&quot;</span><span style="color:#f8f8f2;">,
+            </span><span style="color:#e6db74;">&quot;is_manager&quot;</span><span style="color:#f8f8f2;">,
+            </span><span style="color:#e6db74;">&quot;day_salary&quot;</span><span style="color:#f8f8f2;">,
+            </span><span style="color:#e6db74;">&quot;department_id&quot;</span><span style="color:#f8f8f2;">,
+        ]
+    }
+}
+</span></code></pre>
+<p>The <code>elephantry::Structure::relation</code> function returns the name of the table
+(but it can be a view), <code>elephantry::Structure::primary_key</code> the field or fields
+composing the primary key, and finally <code>elephantry::Structure::columns</code> will
+contain the list of the fields of our table.</p>
+<p>You can use derive attribute to generate this code:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">mod </span><span style="color:#f8f8f2;">employee {
+    #[derive(Debug, elephantry::Entity)]
+    #[elephantry(structure </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;Structure&quot;</span><span style="color:#f8f8f2;">, relation </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;public.employee&quot;</span><span style="color:#f8f8f2;">)]
+    </span><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Entity {
+        #[elephantry(pk)]
+        employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+        first_name: String,
+        last_name: String,
+        birth_date: chrono::NaiveDate,
+        is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+        day_salary: bigdecimal::BigDecimal,
+        department_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    }
+}
+</span></code></pre>
+<p>The <code>elephantry::Model</code> trait creates the link between an entity and a
+structure:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Model;
+
+</span><span style="font-style:italic;color:#66d9ef;">impl</span><span style="color:#f8f8f2;">&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; elephantry::Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; </span><span style="color:#f92672;">for </span><span style="color:#f8f8f2;">Model {
+    </span><span style="font-style:italic;color:#66d9ef;">type </span><span style="color:#f8f8f2;">Entity </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> Entity;
+    </span><span style="font-style:italic;color:#66d9ef;">type </span><span style="color:#f8f8f2;">Structure </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> Structure;
+
+    </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">new</span><span style="color:#f8f8f2;">(</span><span style="color:#f92672;">_</span><span style="color:#f8f8f2;">: </span><span style="color:#f92672;">&amp;&#39;a </span><span style="color:#f8f8f2;">elephantry::Connection) -&gt; </span><span style="font-style:italic;color:#66d9ef;">Self </span><span style="color:#f8f8f2;">{
+        </span><span style="font-style:italic;color:#66d9ef;">Self
+    </span><span style="color:#f8f8f2;">}
+}
+</span></code></pre>
+<p>Or with derive attribute:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">mod </span><span style="color:#f8f8f2;">employee {
+    #[derive(Debug, elephantry::Entity)]
+    #[elephantry(model </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;Model&quot;</span><span style="color:#f8f8f2;">, structure </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;Structure&quot;</span><span style="color:#f8f8f2;">, relation </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;public.employee&quot;</span><span style="color:#f8f8f2;">)]
+    </span><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Entity {
+        #[elephantry(pk)]
+        employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+        first_name: String,
+        last_name: String,
+        birth_date: chrono::NaiveDate,
+        is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+        day_salary: bigdecimal::BigDecimal,
+        department_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    }
+}
+</span></code></pre>
+<p>This information is linked to your database and therefore has little ability to
+change, the <code>elephantry-cli</code> utility generates them for you:</p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f8f8f2;">DATABASE_URL=&#39;postgres://localhost/elephantry&#39; elephantry generate:schema-all
+</span></code></pre>
+<p>This being defined, you can now request our entities without taking care to
+write the entire request:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> employees </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.find_all::&lt;employee::Model&gt;(</span><span style="font-style:italic;color:#66d9ef;">None</span><span style="color:#f8f8f2;">)</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+
+</span><span style="color:#f92672;">for</span><span style="color:#f8f8f2;"> employee </span><span style="color:#f92672;">in</span><span style="color:#f8f8f2;"> employees {
+    dbg!(employee);
+}
+</span></code></pre>
+<p>The <code>elephantry::Connection</code> structure provides additional functions to retreive
+your data :</p>
+<ul>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.find_by_pk"><code>Connection::find_by_pk</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.find_all"><code>Connection::find_all</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.find_where"><code>Connection::find_where</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.paginate_find_where"><code>Connection::paginate_find_where</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.count_where"><code>Connection::count_where</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.exist_where"><code>Connection::exist_where</code></a>.</li>
+</ul>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/03-read.rs">03-read.rs</a>.</p>
+<h1 id="modification">Modification</h1>
+<ul>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.insert_one"><code>Connection::insert_one</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.upsert_one"><code>Connection::upsert_one</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.update_one"><code>Connection::update_one</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.update_by_pk"><code>Connection::update_by_pk</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.delete_one"><code>Connection::delete_one</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.delete_by_pk"><code>Connection::delete_by_pk</code></a>;</li>
+<li><a href="https://docs.rs/elephantry/latest/elephantry/connection/struct.Connection.html#method.delete_where"><code>Connection::delete_where</code></a>.</li>
+</ul>
+<p>Theire functions return the impacted entity(ies).</p>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/04-write.rs">04-write.rs</a>.</p>
+<h1 id="additional-informations">Additional informations</h1>
+<p>So far we have covered the basic functionality, it is you’re probably wondering
+what the point of an ORM is.</p>
+<p>That’s where the database is going to be our best ally. Rather than to get our
+base entities back and then operate on them in order to extend them to
+finally display them, we will directly ask to PostgreSQL to enrich our entities
+and retrieve them with these additional fields (where, why not, don’t get all
+fields<sup class="footnote-reference"><a href="#4">4</a></sup>).</p>
+<p>This will be possible with the model. The default projection<sup class="footnote-reference"><a href="#5">5</a></sup> contains all
+the fields of our table, but it is possible to define another one via the
+<code>elephantry::Model::create_projection</code> function:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">impl</span><span style="color:#f8f8f2;">&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; elephantry::Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; </span><span style="color:#f92672;">for </span><span style="color:#f8f8f2;">Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; {
+    </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">create_projection</span><span style="color:#f8f8f2;">() -&gt; elephantry::Projection {
+        </span><span style="font-style:italic;color:#66d9ef;">Self</span><span style="color:#f8f8f2;">::default_projection()
+            .</span><span style="color:#66d9ef;">add_field</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;age&quot;</span><span style="color:#f8f8f2;">, </span><span style="color:#e6db74;">&quot;age(%:birth_date:%)&quot;</span><span style="color:#f8f8f2;">)
+    }
+}
+</span></code></pre>
+<p>Here we add to our select a field that will contain the age of the employee.
+Note the notation <code>%:birth_date:%</code> which will be replaced by the complet name of
+the field and escape it if necessary.</p>
+<p>Without forgetting to add this field to our entity:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Entity {
+    employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    first_name: String,
+    last_name: String,
+    birth_date: chrono::NaiveDate,
+    is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+    day_salary: </span><span style="font-style:italic;color:#66d9ef;">f32</span><span style="color:#f8f8f2;">,
+    department_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    age: </span><span style="font-style:italic;color:#66d9ef;">u32</span><span style="color:#f8f8f2;">,
+}
+</span></code></pre>
+<p>You also do the same think with the <code>virtual</code> attribute:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Entity {
+    employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    first_name: String,
+    last_name: String,
+    birth_date: chrono::NaiveDate,
+    is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+    day_salary: </span><span style="font-style:italic;color:#66d9ef;">f32</span><span style="color:#f8f8f2;">,
+    department_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    #[elephantry(virtual </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;age(%:birth_date:%)&quot;</span><span style="color:#f8f8f2;">]
+    age: u32,
+}
+</span></code></pre>
+<p>Now by doing a <code>find_all</code> we automatically retrieve this new field:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> employees </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.find_all::&lt;employee::Model&gt;(</span><span style="font-style:italic;color:#66d9ef;">Some</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;order by age&quot;</span><span style="color:#f8f8f2;">))</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+
+</span><span style="color:#f92672;">for</span><span style="color:#f8f8f2;"> employee </span><span style="color:#f92672;">in</span><span style="color:#f8f8f2;"> employees {
+    dbg!(employee);
+}
+</span></code></pre>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/05-extra.rs">05-extra.rs</a>.</p>
+<p>You can already use the power of SQL, such as the <a href="https://modern-sql.com/blog/2019-02/postgresql-11#over">window
+functions</a>, for example,
+compute the difference between each <code>day_salary</code>:</p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f92672;">select</span><span style="color:#f8f8f2;"> first_name, last_name, day_salary,
+    day_salary </span><span style="color:#f92672;">-</span><span style="color:#f8f8f2;"> lag(day_salary) over(</span><span style="color:#f92672;">order by</span><span style="color:#f8f8f2;"> day_salary) </span><span style="color:#f92672;">as</span><span style="color:#f8f8f2;"> difference
+    </span><span style="color:#f92672;">from</span><span style="color:#f8f8f2;"> employee;
+
+┌─────────────┬────────────┬────────────┬────────────┐
+│ first_name  │ last_name  │ day_salary │ difference │
+├─────────────┼────────────┼────────────┼────────────┤
+│ sébastien   │ grossein   │    </span><span style="color:#ae81ff;">3900</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">98</span><span style="color:#f8f8f2;"> │          ¤ │
+│ louise      │ monacor    │    </span><span style="color:#ae81ff;">4100</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">199</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">02</span><span style="color:#f8f8f2;"> │
+│ alexandre   │ jardin     │    </span><span style="color:#ae81ff;">4500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">400</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ david       │ garadjian  │    </span><span style="color:#ae81ff;">4500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │       </span><span style="color:#ae81ff;">0</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ patrick     │ cordier    │    </span><span style="color:#ae81ff;">4700</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">200</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ jérome      │ binet      │    </span><span style="color:#ae81ff;">4800</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">100</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ estelle     │ li jih     │    </span><span style="color:#ae81ff;">5300</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ ishaam      │ elraouï    │    </span><span style="color:#ae81ff;">5600</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">300</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ jean</span><span style="color:#f92672;">-</span><span style="color:#f8f8f2;">pierre │ kassem     │    </span><span style="color:#ae81ff;">8700</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │    </span><span style="color:#ae81ff;">3100</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ david       │ roneker    │    </span><span style="color:#ae81ff;">9000</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │     </span><span style="color:#ae81ff;">300</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ laurent     │ galatier   │   </span><span style="color:#ae81ff;">13850</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │    </span><span style="color:#ae81ff;">4850</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ michèle     │ pfizer     │   </span><span style="color:#ae81ff;">15000</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │    </span><span style="color:#ae81ff;">1150</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ alexis      │ gelbetchev │   </span><span style="color:#ae81ff;">17500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │    </span><span style="color:#ae81ff;">2500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+│ jean        │ dupont     │   </span><span style="color:#ae81ff;">20000</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │    </span><span style="color:#ae81ff;">2500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;"> │
+└─────────────┴────────────┴────────────┴────────────┘
+</span></code></pre>
+<p>Simply add this field to your projection. I leave you imagine the same thing
+done in rust.</p>
+<h1 id="complex-requests">Complex requests</h1>
+<p>Maybe you wish to make a request more complex than simply change the projection,
+for example, an aggregate to sum up even numbers.</p>
+<p>SQL has the advantage of being a high level language: if your query compiles it
+will run without error (like rust ^^). So I encourage you, for more complex
+requests, write them yourself. Elephantry helps you not to copy certain
+information.</p>
+<p>This is done in our model.</p>
+<p>To start, we’re going to handle the connection to the database so that we can
+execute our request:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; {
+    connection: </span><span style="color:#f92672;">&amp;&#39;a </span><span style="color:#f8f8f2;">elephantry::Connection,
+}
+
+</span><span style="font-style:italic;color:#66d9ef;">impl</span><span style="color:#f8f8f2;">&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; elephantry::Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; </span><span style="color:#f92672;">for </span><span style="color:#f8f8f2;">Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; {
+    </span><span style="font-style:italic;color:#66d9ef;">type </span><span style="color:#f8f8f2;">Entity </span><span style="color:#f92672;">= </span><span style="color:#f8f8f2;">std::collections::HashMap&lt;</span><span style="font-style:italic;color:#66d9ef;">String</span><span style="color:#f8f8f2;">, </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">&gt;;
+    </span><span style="font-style:italic;color:#66d9ef;">type </span><span style="color:#f8f8f2;">Structure </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> Structure;
+
+    </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">new</span><span style="color:#f8f8f2;">(</span><span style="font-style:italic;color:#fd971f;">connection</span><span style="color:#f8f8f2;">: </span><span style="color:#f92672;">&amp;&#39;a </span><span style="color:#f8f8f2;">elephantry::Connection) -&gt; </span><span style="font-style:italic;color:#66d9ef;">Self </span><span style="color:#f8f8f2;">{
+        </span><span style="font-style:italic;color:#66d9ef;">Self </span><span style="color:#f8f8f2;">{
+            connection
+        }
+    }
+}
+</span></code></pre>
+<p>Note here we do not define an entity, we will use a simple hash table (which
+implements <code>elephantry::Entity</code>) to store our results.</p>
+<p>Now all we have to do is write down our function:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">impl</span><span style="color:#f8f8f2;">&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; employee::Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; {
+    </span><span style="color:#f92672;">pub </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">managers_salary</span><span style="color:#f8f8f2;">(</span><span style="color:#f92672;">&amp;</span><span style="font-style:italic;color:#fd971f;">self</span><span style="color:#f8f8f2;">) -&gt; elephantry::</span><span style="font-style:italic;color:#66d9ef;">Result</span><span style="color:#f8f8f2;">&lt;</span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">&gt; {
+        </span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> query </span><span style="color:#f92672;">= </span><span style="color:#e6db74;">&quot;select sum(day_salary) from employee where is_manager&quot;</span><span style="color:#f8f8f2;">;
+
+        </span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> result </span><span style="color:#f92672;">= </span><span style="color:#f8f8f2;">self.connection.</span><span style="color:#66d9ef;">execute</span><span style="color:#f8f8f2;">(query)</span><span style="color:#f92672;">?
+            </span><span style="color:#f8f8f2;">.</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#ae81ff;">0</span><span style="color:#f8f8f2;">)
+            .</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;sum&quot;</span><span style="color:#f8f8f2;">);
+
+        </span><span style="font-style:italic;color:#66d9ef;">Ok</span><span style="color:#f8f8f2;">(result)
+    }
+}
+</span></code></pre>
+<p>And finally, we retrieve our model from our connection to run our request:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> model </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.model::&lt;employee::Model&gt;();
+</span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> managers_salary </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> model.</span><span style="color:#66d9ef;">managers_salary</span><span style="color:#f8f8f2;">()</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/06-complex.rs">06-complex.rs</a>.</p>
+<h1 id="relationships">Relationships</h1>
+<p>When you get here, you must have at least one question left: how do you deal
+with relations of our entity?</p>
+<p>With an ORM, we retrieve the employee we are interested in and then use a method
+<code>get_departement</code> which will launch a new query to retrieve its department.</p>
+<p>It’s in cases like that we need to think the exact opposite with the ORM
+approach: we will make only one query and retrieve our employee as well as his
+departments. Our SQL query will present the given in such a way that there’s
+simply a transformation of the types to be done. This is possible because
+PostgreSQL knows how to handle arrays, so we’re going to (via the projection)
+add a department table and all this will be transformed by elephantry into an
+entity:</p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f92672;">use </span><span style="color:#f8f8f2;">elephantry::{Model, Structure};
+
+#[derive(Debug, elephantry::Entity)]
+</span><span style="color:#f92672;">pub </span><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Employee {
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">first_name: String,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">last_name: String,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">birth_date: chrono::NaiveDate,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">day_salary: bigdecimal::BigDecimal,
+    #[elephantry(virtual)]
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">departments: </span><span style="font-style:italic;color:#66d9ef;">Vec</span><span style="color:#f8f8f2;">&lt;</span><span style="font-style:italic;color:#66d9ef;">String</span><span style="color:#f8f8f2;">&gt;,
+}
+
+</span><span style="font-style:italic;color:#66d9ef;">impl</span><span style="color:#f8f8f2;">&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; employee::Model&lt;</span><span style="color:#f92672;">&#39;a</span><span style="color:#f8f8f2;">&gt; {
+    </span><span style="color:#f92672;">pub </span><span style="font-style:italic;color:#66d9ef;">fn </span><span style="color:#a6e22e;">employee_with_department</span><span style="color:#f8f8f2;">(</span><span style="color:#f92672;">&amp;</span><span style="font-style:italic;color:#fd971f;">self</span><span style="color:#f8f8f2;">, </span><span style="font-style:italic;color:#fd971f;">id</span><span style="color:#f8f8f2;">: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">) -&gt; elephantry::</span><span style="font-style:italic;color:#66d9ef;">Result</span><span style="color:#f8f8f2;">&lt;Employee&gt; {
+        </span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> query </span><span style="color:#f92672;">= </span><span style="font-style:italic;color:#66d9ef;">r</span><span style="color:#e6db74;">#&quot;
+select {projection}
+    from {employee}
+    join {departments} using(department_id)
+    where employee_id = $1
+    group by employee_id
+&quot;#</span><span style="color:#f8f8f2;">;
+
+        </span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> projection </span><span style="color:#f92672;">= </span><span style="font-style:italic;color:#66d9ef;">Self</span><span style="color:#f8f8f2;">::create_projection()
+            .</span><span style="color:#66d9ef;">unset_field</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;department_id&quot;</span><span style="color:#f8f8f2;">)
+            .</span><span style="color:#66d9ef;">add_field</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;department&quot;</span><span style="color:#f8f8f2;">, </span><span style="color:#e6db74;">&quot;array_agg(department.name)&quot;</span><span style="color:#f8f8f2;">);
+
+        </span><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> sql </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> query
+            .</span><span style="color:#66d9ef;">replace</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;{projection}&quot;</span><span style="color:#f8f8f2;">, </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">projection.</span><span style="color:#66d9ef;">to_string</span><span style="color:#f8f8f2;">())
+            .</span><span style="color:#66d9ef;">replace</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;{employee}&quot;</span><span style="color:#f8f8f2;">, employee::Structure::relation())
+            .</span><span style="color:#66d9ef;">replace</span><span style="color:#f8f8f2;">(</span><span style="color:#e6db74;">&quot;{department}&quot;</span><span style="color:#f8f8f2;">, department::Structure::relation());
+
+        </span><span style="font-style:italic;color:#66d9ef;">Ok</span><span style="color:#f8f8f2;">(self.connection.query::&lt;Employee&gt;(</span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">sql, </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[</span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">id])</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">.</span><span style="color:#66d9ef;">get</span><span style="color:#f8f8f2;">(</span><span style="color:#ae81ff;">0</span><span style="color:#f8f8f2;">))
+    }
+}
+</span></code></pre>
+<blockquote>
+<p>If you use the <code>model</code> attribute to generate the <code>Model</code> implementation, you
+should add a <code>virtual</code> attribute to exclude this column from queries.</p>
+</blockquote>
+<p>Ok, it’s a simple query because we retreive only one department per employee,
+but a department can have a parent! Why don’t you retreive its hierarchie? The
+query is a little more complex, especially if you aren’t familiar with
+<a href="https://www.postgresql.org/docs/current/queries-with.html">recurcive CTE</a>, here
+the SQL query:</p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f92672;">with</span><span style="color:#f8f8f2;"> recursive
+    depts (department_id, parent_id, name) </span><span style="color:#f92672;">as</span><span style="color:#f8f8f2;"> (
+        </span><span style="color:#f92672;">select </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">department_id</span><span style="color:#f8f8f2;">, </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">parent_id</span><span style="color:#f8f8f2;">, </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">name </span><span style="color:#f92672;">from</span><span style="color:#f8f8f2;"> department d </span><span style="color:#f92672;">join</span><span style="color:#f8f8f2;"> employee e </span><span style="color:#f92672;">using</span><span style="color:#f8f8f2;">(department_id) </span><span style="color:#f92672;">where </span><span style="color:#ae81ff;">e</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">employee_id </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> $</span><span style="color:#ae81ff;">1
+        </span><span style="color:#f92672;">union all
+        select </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">department_id</span><span style="color:#f8f8f2;">, </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">parent_id</span><span style="color:#f8f8f2;">, </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">name </span><span style="color:#f92672;">from</span><span style="color:#f8f8f2;"> depts parent </span><span style="color:#f92672;">join</span><span style="color:#f8f8f2;"> department d on </span><span style="color:#ae81ff;">parent</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">parent_id </span><span style="color:#f92672;">= </span><span style="color:#ae81ff;">d</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">department_id</span><span style="color:#f8f8f2;">
+    )
+</span><span style="color:#f92672;">select</span><span style="color:#f8f8f2;"> e.*, array_agg(</span><span style="color:#ae81ff;">depts</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">name</span><span style="color:#f8f8f2;">) </span><span style="color:#f92672;">as</span><span style="color:#f8f8f2;"> departments
+    </span><span style="color:#f92672;">from</span><span style="color:#f8f8f2;"> employee e, depts
+    </span><span style="color:#f92672;">where </span><span style="color:#ae81ff;">e</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">employee_id </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> $</span><span style="color:#ae81ff;">1
+    </span><span style="color:#f92672;">group by </span><span style="color:#ae81ff;">e</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">employee_id</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>And you can see
+<a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/07-relations.rs">07-relations</a> for the
+complete example. How many queries do you think would be executed with an
+ORM?<sup class="footnote-reference"><a href="#6">6</a></sup></p>
+<h1 id="composite-type">Composite type</h1>
+<p>With PostgreSQL, when you create a table, you also create a type with the same
+name.</p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f92672;">select</span><span style="color:#f8f8f2;"> employee </span><span style="color:#f92672;">from</span><span style="color:#f8f8f2;"> employee;
+
+┌────────────────────────────────────────────────┐
+│                    employee                    │
+├────────────────────────────────────────────────┤
+│ (</span><span style="color:#ae81ff;">1</span><span style="color:#f8f8f2;">,jean,dupont,</span><span style="color:#ae81ff;">1952</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">03</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">21</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">20000</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">3</span><span style="color:#f8f8f2;">)        │
+│ (</span><span style="color:#ae81ff;">2</span><span style="color:#f8f8f2;">,alexis,gelbetchev,</span><span style="color:#ae81ff;">1960</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">09</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">12</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">17500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">3</span><span style="color:#f8f8f2;">)  │
+│ (</span><span style="color:#ae81ff;">3</span><span style="color:#f8f8f2;">,michèle,pfizer,</span><span style="color:#ae81ff;">1956</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">01</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">07</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">15000</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">4</span><span style="color:#f8f8f2;">)     │
+│ (</span><span style="color:#ae81ff;">4</span><span style="color:#f8f8f2;">,laurent,galatier,</span><span style="color:#ae81ff;">1969</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">05</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">19</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">13850</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">5</span><span style="color:#f8f8f2;">)   │
+│ (</span><span style="color:#ae81ff;">5</span><span style="color:#f8f8f2;">,david,roneker,</span><span style="color:#ae81ff;">1972</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">12</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">02</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">9000</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">5</span><span style="color:#f8f8f2;">)       │
+│ (</span><span style="color:#ae81ff;">6</span><span style="color:#f8f8f2;">,ishaam,elraouï,</span><span style="color:#ae81ff;">1978</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">06</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">21</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">5600</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">6</span><span style="color:#f8f8f2;">)      │
+│ (</span><span style="color:#ae81ff;">7</span><span style="color:#f8f8f2;">,estelle,</span><span style="color:#e6db74;">&quot;li jih&quot;</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">1976</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">08</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">07</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">5300</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">6</span><span style="color:#f8f8f2;">)    │
+│ (</span><span style="color:#ae81ff;">8</span><span style="color:#f8f8f2;">,jean</span><span style="color:#f92672;">-</span><span style="color:#f8f8f2;">pierre,kassem,</span><span style="color:#ae81ff;">1964</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">03</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">30</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">8700</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">10</span><span style="color:#f8f8f2;">) │
+│ (</span><span style="color:#ae81ff;">9</span><span style="color:#f8f8f2;">,alexandre,jardin,</span><span style="color:#ae81ff;">1983</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">09</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">14</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">4500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">9</span><span style="color:#f8f8f2;">)    │
+│ (</span><span style="color:#ae81ff;">10</span><span style="color:#f8f8f2;">,jérome,binet,</span><span style="color:#ae81ff;">1981</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">11</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">03</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">4800</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">9</span><span style="color:#f8f8f2;">)       │
+│ (</span><span style="color:#ae81ff;">11</span><span style="color:#f8f8f2;">,david,garadjian,</span><span style="color:#ae81ff;">1985</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">02</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">28</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">4500</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">8</span><span style="color:#f8f8f2;">)    │
+│ (</span><span style="color:#ae81ff;">12</span><span style="color:#f8f8f2;">,louise,monacor,</span><span style="color:#ae81ff;">1988</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">07</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">11</span><span style="color:#f8f8f2;">,t,</span><span style="color:#ae81ff;">4100</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">8</span><span style="color:#f8f8f2;">)     │
+│ (</span><span style="color:#ae81ff;">13</span><span style="color:#f8f8f2;">,patrick,cordier,</span><span style="color:#ae81ff;">1980</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">01</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">28</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">4700</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">8</span><span style="color:#f8f8f2;">)    │
+│ (</span><span style="color:#ae81ff;">14</span><span style="color:#f8f8f2;">,sébastien,grossein,</span><span style="color:#ae81ff;">1987</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">10</span><span style="color:#f92672;">-</span><span style="color:#ae81ff;">18</span><span style="color:#f8f8f2;">,f,</span><span style="color:#ae81ff;">3900</span><span style="color:#f8f8f2;">.</span><span style="color:#ae81ff;">00</span><span style="color:#f8f8f2;">,</span><span style="color:#ae81ff;">8</span><span style="color:#f8f8f2;">) │
+└────────────────────────────────────────────────┘
+</span></code></pre>
+<p>Here <code>employee</code> is a <em>composite type</em> contains all fields of the corresponding
+table.</p>
+<p>You can use composite type to retreive all fields for relations:</p>
+<pre style="background-color:#272822;">
+<code><span style="color:#f8f8f2;">#[derive(Debug, elephantry::Entity)]
+</span><span style="color:#f92672;">pub </span><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Entity {
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">employee_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">first_name: String,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">last_name: String,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">birth_date: chrono::NaiveDate,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">is_manager: </span><span style="font-style:italic;color:#66d9ef;">bool</span><span style="color:#f8f8f2;">,
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">day_salary: bigdecimal::BigDecimal,
+    #[elephantry(virtual)]
+    </span><span style="color:#f92672;">pub </span><span style="color:#f8f8f2;">departments: </span><span style="font-style:italic;color:#66d9ef;">Vec</span><span style="color:#f8f8f2;">&lt;Department&gt;,
+}
+
+#[derive(Debug, elephantry::Composite)]
+</span><span style="color:#f92672;">pub </span><span style="font-style:italic;color:#66d9ef;">struct </span><span style="color:#f8f8f2;">Department {
+    department_id: </span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">,
+    name: String,
+    parent_id: </span><span style="font-style:italic;color:#66d9ef;">Option</span><span style="color:#f8f8f2;">&lt;</span><span style="font-style:italic;color:#66d9ef;">i32</span><span style="color:#f8f8f2;">&gt;,
+}
+</span></code></pre>
+<p>See <a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/08-composite.rs">08-composite.rs</a>.</p>
+<p>Composite types can also be created with <a href="https://www.postgresql.org/docs/current/rowtypes.html">create
+type</a>.</p>
+<h1 id="async">Async</h1>
+<p><code>Connection::execute</code>, <code>Connection::query</code> and <code>Connection::query_one</code> are
+available in async context. To benefit from it, simply use the
+<code>Connection::r#async</code> function:</p>
+<pre style="background-color:#272822;">
+<code><span style="font-style:italic;color:#66d9ef;">let</span><span style="color:#f8f8f2;"> results </span><span style="color:#f92672;">=</span><span style="color:#f8f8f2;"> elephantry.r</span><span style="color:#f92672;">#</span><span style="color:#66d9ef;">async</span><span style="color:#f8f8f2;">().query::&lt;employee::Entity&gt;(</span><span style="color:#e6db74;">&quot;select * from employee&quot;</span><span style="color:#f8f8f2;">, </span><span style="color:#f92672;">&amp;</span><span style="color:#f8f8f2;">[]).await</span><span style="color:#f92672;">?</span><span style="color:#f8f8f2;">;
+</span></code></pre>
+<p>You can see the
+<a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/09-async.rs">09-async.rs</a> example<sup class="footnote-reference"><a href="#7">7</a></sup>, it’s a
+rewrite of second example in async context.</p>
+<h1 id="transaction">Transaction</h1>
+<p>As async, there is a second layer dedicated to transactions available via
+<code>Connection::transaction</code> function.</p>
+<p>This layer allows you to start (begin) a new transaction, commit, roolback, …</p>
+<p>You can see the
+<a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/10-transaction.rs">10-transaction.rs</a> for a
+complete example.</p>
+<h1 id="notification">Notification</h1>
+<p>PostgreSQL can be a low-effort message broker with <code>LISTEN</code>/<code>NOTIFY</code> commands.</p>
+<p>See the
+<a href="https://github.com/elephantry/elephantry/blob/2.1.0/core/examples/11-notification.rs">11-notification.rs</a> example.</p>
+<h1 id="more">More</h1>
+<p>You can also see the <a href="https://github.com/elephantry/todo">todo</a> rocket
+application for a real example.</p>
+<p>You know everything there is to know about elephantry, the rest depends on your
+imagination and your mastery of SQL.</p>
+<p>To go further on this last point:</p>
+<ul>
+<li><a href="https://modern-sql.com">Modern SQL</a>;</li>
+<li><a href="https://theartofpostgresql.com">The Art of PostgreSQL</a>.</li>
+</ul>
+<hr />
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>We’re on the same diesel to elephantry ratio.</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>A tool that launches like <code>psql</code> but explain a query instead of execute its.</p>
+</div>
+<div class="footnote-definition" id="3"><sup class="footnote-definition-label">3</sup>
+<p>Constant time access <code>O(1)</code>.</p>
+</div>
+<div class="footnote-definition" id="4"><sup class="footnote-definition-label">4</sup>
+<p>This is particularly useful for not retrieving sensitive data like
+passwords.</p>
+</div>
+<div class="footnote-definition" id="5"><sup class="footnote-definition-label">5</sup>
+<p>The projection is the list of fields in the SELECT part of the request.</p>
+</div>
+<div class="footnote-definition" id="6"><sup class="footnote-definition-label">6</sup>
+<p>1 for the employee plus 1 per department, 4 here. The time taken by a
+query isn’t just the time to execute it. Every time you should add the network
+latency plus the time the ORM transforms results in objet.</p>
+</div>
+<div class="footnote-definition" id="7"><sup class="footnote-definition-label">7</sup>
+<p>The relevance of this example is limited because the underlayed driver, libpq,
+supports only one async query at a time.</p>
+</div>
+
+    </div>
+</div>
+
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>&copy; 2020 - 2021 <a href="https://github.com/orgs/elephantry/people">The elephantry team</a>.</p>
+            </div>
+        </footer>
+    </body>
+</html>

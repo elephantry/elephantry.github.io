@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://elephantry.github.io/sitemap.xml
