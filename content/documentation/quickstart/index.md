@@ -32,7 +32,7 @@ more complex queries without overhead.
 The first consequence of this is a much simpler tool. As a
 comparison [doctrine](https://www.doctrine-project.org/projects/orm.html)
 (the most popular ORM in the PHP ecosystem) includes 230,850 lines of code
-compared to 24,906 for [POMM](http://www.pomm-project.org)[^1].
+compared to 24,906 for [POMM](https://github.com/pomm-project)[^1].
 
 The second consequence you’ll unleashed the power of SQL and using all of its
 power.
