@@ -546,7 +546,7 @@ add a department table and all this will be transformed by elephantry into an
 entity:
 
 ```rust
-use elephantry::{Model, Structure};
+use elephantry::{Model, Projectable};
 
 #[derive(Debug, elephantry::Entity)]
 pub struct Employee {
@@ -562,22 +562,23 @@ pub struct Employee {
 
 impl employee::Model {
     pub fn employee_with_department(&self, id: i32) -> elephantry::Result<Employee> {
-        let query = r#"
-select {projection}
-    from {employee}
-    join {departments} using(department_id)
-    where employee_id = $1
-    group by employee_id
-"#;
-
         let projection = Self::create_projection()
             .unset_field("department_id")
-            .add_field("department", "array_agg(department.name)");
+            .add_field("departments", "array_agg(depts)")
+            .alias("e")
+            .to_string();
+        let employee = employee::Structure::relation();
+        let department = department::Structure::relation();
 
-        let sql = query
-            .replace("{projection}", &projection.to_string())
-            .replace("{employee}", employee::Structure::relation())
-            .replace("{department}", department::Structure::relation());
+        let sql = format!(
+                r#"
+select {projection}
+    from {employee}
+    join {department} using(department_id)
+    where employee_id = $1
+    group by employee_id
+"#
+        );
 
         Ok(self.connection.query::<Employee>(&sql, &[&id])?.get(0))
     }
