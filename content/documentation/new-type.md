@@ -201,6 +201,19 @@ fn from_binary(ty: &elephantry::pq::Type, raw: Option<&[u8]>) -> elephantry::Res
 You can retreive the complete code
 [here](https://github.com/elephantry/elephantry/blob/4.0.0/core/src/sql/ltree/mod.rs).
 
+# Entity
+
+Well, now your type implements both `elephantry::FromSql` and
+`elephantry::ToSql` traits, we can implement the empty trait
+`elephantry::entity::Simple`:
+
+```rust
+impl elephantry::entity::Simple for Ltree {}
+```
+
+This trait implements the `elephantry::Entity` for you and allow using your type
+as a member to another entity.
+
 ---
 
 [^1]: `ToSql::to_binary` is used for `Connection::copy` function,
