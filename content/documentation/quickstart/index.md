@@ -98,8 +98,8 @@ file.
 
 You can see the
 [explain code
-source](https://github.com/sanpii/explain/blob/1.2.0/src/main.rs#L106-L108)[^2] to
-see an example how to use this with `structopt` (it’s easy like impl the `Into`
+source](https://github.com/sanpii/explain/blob/1.5.0/src/main.rs#L112-L114)[^2] to
+see an example how to use this with `clap` (it’s easy like impl the `Into`
 trait).
 
 You can also use the [config](https://crates.io/crates/config) crate (by
