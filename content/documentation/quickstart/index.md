@@ -368,8 +368,8 @@ See [04-write.rs](https://github.com/elephantry/elephantry/blob/3.0.0/core/examp
 
 ## Additional informations
 
-So far we have covered the basic functionality, it is you’re probably wondering
-what the point of an ORM is.
+So far we have covered the basic functionalities, you’re probably wondering
+what the difference is with an ORM.
 
 That’s where the database is going to be our best ally. Rather than to get our
 base entities back and then operate on them in order to extend them to
