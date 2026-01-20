@@ -671,6 +671,37 @@ See [08-composite.rs](https://github.com/elephantry/elephantry/blob/3.0.0/core/e
 Composite types can also be created with [create
 type](https://www.postgresql.org/docs/current/rowtypes.html).
 
+## Enum
+
+Enums are another kind of PostgreSQL type, it’s the same think as in rust:
+
+```SQL
+create type rainbow as enum ('Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple');
+```
+
+```rust
+#[derive(elephantry::Enum)]
+enum Rainbow {
+    Red,
+    Orange,
+    Yellow,
+    Green,
+    Blue,
+    Purple,
+}
+```
+
+By default it’s a naive string convertion, if you want to have a different
+representation is rust than in SQL, you can use the value attribute:
+
+```rust
+#[derive(elephantry::Enum)]
+enum Rainbow {
+    #[elephantry(value = "Purple")]
+    Violet,
+}
+```
+
 ## More
 
 ### Async
