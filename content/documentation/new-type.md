@@ -214,6 +214,12 @@ impl elephantry::entity::Simple for Ltree {}
 This trait implements the `elephantry::Entity` for you and allow using your type
 as a member to another entity.
 
+# FromText/ToText
+
+If your type have the same representation as a string, in text **and** binary
+formats, you can use the `elephantry::FromText` and `elephantry::ToText` to
+simplify the implemenation. This is what is done for enumerations, for example.
+
 ---
 
 [^1]: `ToSql::to_binary` is used for `Connection::copy` function,
