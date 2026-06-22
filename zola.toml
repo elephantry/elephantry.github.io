@@ -2,6 +2,9 @@ base_url = "https://elephantry.github.io"
 compile_sass = true
 build_search_index = false
 
+[markdown]
+github_alerts = true
+
 [markdown.highlighting]
 theme = "monokai"
 

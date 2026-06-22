@@ -107,6 +107,7 @@ enabling the `config-support` feature) to use this layered configuration system
 to easily build an `elephantry::Config` object. See
 [00-config.rs](https://github.com/elephantry/elephantry/blob/3.0.0/core/examples/00-config.rs).
 
+> [!TIP]
 > To help your sysadmin to investage about performance issues, I recommand to
 > set the [application
 > name](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)
@@ -206,6 +207,7 @@ let employees = elephantry.query::<employee::Entity>(
 )?;
 ```
 
+> [!TIP]
 > If you’re tired of numbering parameters, you can use the `$*` placeholder.
 
 This saves you from having to pay attention to special characters and protects
