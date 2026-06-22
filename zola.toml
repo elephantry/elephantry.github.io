@@ -4,6 +4,7 @@ build_search_index = false
 
 [markdown]
 github_alerts = true
+bottom_footnotes = true
 
 [markdown.highlighting]
 theme = "monokai"
