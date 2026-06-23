@@ -704,6 +704,9 @@ enum Rainbow {
 }
 ```
 
+See the
+[13-enum.rs](https://github.com/elephantry/elephantry/blob/5.3.0/core/examples/13-enum.rs) example.
+
 ## More
 
 ### Async
