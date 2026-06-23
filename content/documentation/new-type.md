@@ -170,7 +170,7 @@ pq_sendtext(&buf, res, strlen(res));
 
 Postgresql sends:
 
-- a `i8`: the binary format version (`1`);
+- an `i8`: the binary format version (`1`);
 - a `String`: the deparse version of the ltree (like the text version).
 
 ```rust
@@ -181,9 +181,6 @@ fn to_binary(&self) -> elephantry::Result<Option<Vec<u8>>> {
     Ok(Some(buf))
 }
 ```
-
-As for the text version, we use `String::to_binary()` to convert the string to
-postgresql binary format.
 
 Finally, to convert a value from postgresql to rust, it’s similar. Just skip
 the version number and the leading string can be parsed as the text version:
@@ -218,7 +215,79 @@ as a member to another entity.
 
 If your type have the same representation as a string, in text **and** binary
 formats, you can use the `elephantry::FromText` and `elephantry::ToText` to
-simplify the implemenation. This is what is done for enumerations, for example.
+simplify the implementation.
+
+# Tests
+
+Ideally, you should start by writing test for your new type, but it’s easier to
+understand now we saw the different parts of the implementation.
+
+With the `testing` features, you get the `convertion!` macro to write test:
+
+```rust
+#[cfg(test)]
+mod test {
+    elephantry::testing::convertion! {
+        fixture: "test",
+        sql_type: ltree,
+        rust_type: crate::Ltree,
+        tests: [
+            ("''", crate::Ltree::default()),
+            (
+                "'Top.Countries.Europe.Russia'",
+                crate::Ltree(vec![
+                    "Top".to_string(),
+                    "Countries".to_string(),
+                    "Europe".to_string(),
+                    "Russia".to_string()
+                ])
+            ),
+        ],
+    }
+}
+```
+
+You can optionally add a fixture, by specified its path or just a name and the
+file should be located at `fixtures/{name}.sql`.
+
+I hope `sql_type` and `rust_type` parameters are transparent.
+
+`tests` is an array of tuples with the SQL value and the rust version.
+
+This macro execute these queries and check if the result is the same after
+converting in rust:
+
+```rust
+// from_text
+connection.execute::<{rust_type}>("select {value}::{sql_type}");
+
+// from_binary
+connection.query::<{rust_type}>("select {value}::{sql_type}");
+
+// to_text
+connection.mode = elephantry::pq::Type::Text;
+connection.query::<{rust_type}>("select $1::{sql_type}", &[value]);
+
+// to_binary
+connection.mode = elephantry::pq::Type::Binary;
+connection.query::<{rust_type}>("select $1::{sql_type}", &[value]);
+```
+
+Tests are overlapped, it could be a little tricky if you don’t know which
+function to start with.
+
+I recommend following this order:
+
+- `from_text`;
+- `from_binary`;
+- `to_text`;
+- `to_binary`.
+
+You can valid tests one after another, and text format is easier to implement,
+before writing the binary one.
+
+You can retrieve the complete code of this tutorial in the
+[14-new-type.rs](https://github.com/elephantry/elephantry/blob/5.0.0/core/examples/14-new-type.rs) example.
 
 ---
 
