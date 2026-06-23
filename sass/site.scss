@@ -1,3 +1,15 @@
+@import url("/giallo.css");
+
+code {
+    .z-entity.z-name.z-type,
+    .z-entity.z-name.z-class,
+    .z-entity.z-name.z-namespace,
+    .z-entity.z-name.z-scope-resolution,
+    .z-entity.z-other.z-inherited-class {
+        text-decoration: none;
+    }
+}
+
 $blue: #336791;
 $gray: #e9ecef;
 
