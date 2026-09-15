@@ -3,10 +3,10 @@
         <meta charset="utf-8">
         <title>
             Elephantry - When Rust meets PostgreSQL
-            {% if page.title %}
+            {% if page and page.title %}
                 | {{ page.title }}
             {% endif %}
-            {% if section.title %}
+            {% if section and section.title %}
                 | {{ section.title }}
             {% endif %}
         </title>
