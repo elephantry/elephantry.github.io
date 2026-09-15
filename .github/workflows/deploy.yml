@@ -15,7 +15,7 @@ jobs:
       with:
         cmd: install
     - name: Build and deploy
-      uses: shalzz/zola-deploy-action@v0.19.2
+      uses: shalzz/zola-deploy-action@v0.23.1
       env:
         PAGES_BRANCH: gh-pages
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
