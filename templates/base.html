@@ -1,6 +1,8 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>
             Elephantry - When Rust meets PostgreSQL
             {% if page and page.title %}
@@ -10,34 +12,45 @@
                 | {{ section.title }}
             {% endif %}
         </title>
-        <link rel="icon" type="image/png" href="{{ get_url(path="/favicon.ico")|safe }}" sizes="32x32" />
-        <link href="{{ get_url(path="/lib/bootstrap/dist/css/bootstrap.min.css")|safe }}" rel="stylesheet" />
-        <link rel="stylesheet" href="{{ get_url(path="site.css")|safe }}"/>
+        <link rel="icon" type="image/png" href="/favicon.ico" sizes="32x32" />
+        <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="/site.css" />
     </head>
     <body>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <nav class="navbar md:navbar-expand bg-1" data-bs-theme="dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{{ get_url(path="/")|safe }}">Elephantry</a>
+                <a class="navbar-brand" href="/">Elephantry</a>
 
-                <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Docs</a>
-                            {% set doc = get_section(path="documentation/_index.md") %}
-                            <ul class="dropdown-menu">
-                                {% for page in doc.pages %}
-                                    <li><a class="dropdown-item" href="{{ page.permalink }}">{{ page.title }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link ext" target="_blank" href="https://docs.rs/elephantry/">API</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link ext" target="_blank" href="https://github.com/elephantry/elephantry">Code</a>
-                        </li>
-                    </ul>
-                </div>
+                <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="drawer" data-bs-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon" aria-hidden="true"></span>
+                </button>
+
+                <dialog class="drawer drawer-end" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
+                    <div class="drawer-header">
+                        <h5 class="drawer-title" id="navbarDrawerLabel">Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="drawer" aria-label="Close"></button>
+                    </div>
+                    <div class="drawer-body  mb-2 md:mb-0">
+                        <ul class="nav navbar-nav me-auto">
+                            <li class="nav-item">
+                                <button class="nav-link" href="#" data-bs-toggle="menu" aria-expanded="false">Docs</button>
+
+                                <div class="menu">
+                                    {% set doc = get_section(path="documentation/_index.md") %}
+                                    {% for page in doc.pages %}
+                                        <a class="menu-item" href="{{ page.permalink }}">{{ page.title }}</a>
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ext" target="_blank" href="https://docs.rs/elephantry/">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ext" target="_blank" href="https://github.com/elephantry/elephantry">Code</a>
+                            </li>
+                        </ul>
+                    </div>
+                </dialog>
             </div>
         </nav>
 
@@ -50,5 +63,12 @@
                 <p>&copy; 2020 - 2022 <a href="https://github.com/orgs/elephantry/people">The elephantry team</a>.</p>
             </div>
         </footer>
+
+        <script type="module">
+            import { Drawer } from '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'
+
+            const drawerElementList = document.querySelectorAll('dialog.drawer')
+            const drawerList = [...drawerElementList].map(drawerEl => new Drawer(drawerEl))
+        </script>
     </body>
 </html>
