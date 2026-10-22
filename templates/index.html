@@ -12,7 +12,7 @@
                     Elephantry is an open source database access framework in
                     Rust dedicated to PostgreSQL.
                 </p>
-                <p><a class="btn btn-primary btn-lg" href="{{ get_url(path="/documentation/quickstart")|safe }}" role="button">Get started »</a></p>
+                <p><a class="btn-solid theme-primary btn-lg" href="{{ get_url(path="/documentation/quickstart")|safe }}" role="button">Get started »</a></p>
             </div>
         </div>
     </div>
@@ -21,19 +21,19 @@
         <div class="{% if loop.index is odd %}odd{% else %}even{% endif %}">
             <div class="container">
                 <div class="row">
-                    <div class="col-sm">
+                    <div class="col">
                         {% if loop.index is even %}
                             <h3>{{ page.title }}</h3>
                             <hr />
                             <p>{{ page.description|markdown|safe }}</p>
                             {% if page.extra.more %}
-                                <p><a class="btn btn-outline-primary" href="{{ get_url(path=page.extra.more) }}">Read more »</a></p>
+                                <p><a class="btn-outline theme-primary" href="{{ get_url(path=page.extra.more) }}">Read more »</a></p>
                             {% endif %}
                         {% else %}
                             {{ page.content|safe }}
                         {% endif %}
                     </div>
-                    <div class="col-sm">
+                    <div class="col">
                         {% if loop.index is even %}
                             {{ page.content|safe }}
                         {% else %}
@@ -41,7 +41,7 @@
                             <hr />
                             <p>{{ page.description|markdown|safe }}</p>
                             {% if page.extra.more %}
-                                <p><a class="btn btn-outline-light" href="{{ get_url(path=page.extra.more) }}">Read more »</a></p>
+                                <p><a class="btn-outline theme-secondary" href="{{ get_url(path=page.extra.more) }}">Read more »</a></p>
                             {% endif %}
                         {% endif %}
                     </div>

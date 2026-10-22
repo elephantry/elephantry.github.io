@@ -33,26 +33,27 @@ pre {
     border-radius: 15px;
 }
 
-a {
+main a, footer a {
     color: $blue;
     font-weight: bold;
 }
 
-.btn-outline-primary {
+.btn-outline.theme-primary {
     color: $blue;
     border-color: $blue;
 }
 
-.btn-primary, .btn-outline-primary:hover {
+.btn-solid.theme-primary, .btn-outline.theme-primary:hover {
     background-color: $blue;
     border-color: $blue;
+    color: white;
 }
 
-.btn-outline-light:hover {
+.btn-outline.theme-secondary:hover {
     color: $blue;
 }
 
-.btn-primary:hover {
+.btn-solid.theme-primary:hover {
     background-color: white;
     color: $blue;
 }
