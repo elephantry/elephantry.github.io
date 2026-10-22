@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            Elephantry - When Rust meets PostgreSQL
+            
+            
+        </title>
+        <link rel="icon" type="image/png" href="/favicon.ico" sizes="32x32" />
+        <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="/site.css" />
+    </head>
+    <body>
+        <nav class="navbar md:navbar-expand bg-1" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Elephantry</a>
+
+                <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="drawer" data-bs-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon" aria-hidden="true"></span>
+                </button>
+
+                <dialog class="drawer drawer-end" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
+                    <div class="drawer-header">
+                        <h5 class="drawer-title" id="navbarDrawerLabel">Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="drawer" aria-label="Close"></button>
+                    </div>
+                    <div class="drawer-body  mb-2 md:mb-0">
+                        <ul class="nav navbar-nav me-auto">
+                            <li class="nav-item">
+                                <button class="nav-link" href="#" data-bs-toggle="menu" aria-expanded="false">Docs</button>
+
+                                <div class="menu">
+                                    
+                                    
+                                        <a class="menu-item" href="https://elephantry.github.io/documentation/quickstart/">Quickstart</a>
+                                    
+                                        <a class="menu-item" href="https://elephantry.github.io/documentation/new-type/">Create a new type</a>
+                                    
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ext" target="_blank" href="https://docs.rs/elephantry/">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ext" target="_blank" href="https://github.com/elephantry/elephantry">Code</a>
+                            </li>
+                        </ul>
+                    </div>
+                </dialog>
+            </div>
+        </nav>
+
+        <main role="main">
+            
+    <div class="jumbotron">
+        <div class="container d-flex">
+            <div class="flex-shrink-0">
+                <img src="logo.png" alt="logo" class="mr-3" />
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h2>When Rust meets PostgreSQL</h2>
+                <p>
+                    Elephantry is an open source database access framework in
+                    Rust dedicated to PostgreSQL.
+                </p>
+                <p><a class="btn-solid theme-primary btn-lg" href="https://elephantry.github.io/documentation/quickstart" role="button">Get started »</a></p>
+            </div>
+        </div>
+    </div>
+
+    
+        <div class="odd">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        
+                            <pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> elephantry</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Pool</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">new</span><span>(</span><span style="color: #F92672;">&amp;</span><span>database_url)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> results</span><span style="color: #F92672;"> =</span><span> elephantry</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    .</span><span style="color: #A6E22E;">execute</span><span>(</span><span style="color: #E6DB74;">&quot;select name from department&quot;</span><span>)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F92672;">for</span><span> result</span><span style="color: #F92672;"> in &amp;</span><span>results {</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span> name</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">String</span><span style="color: #F92672;"> =</span><span> result</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">get</span><span>(</span><span style="color: #E6DB74;">&quot;name&quot;</span><span>);</span></span>
+<span class="giallo-l"><span style="color: #A6E22E;">    println!</span><span>(</span><span style="color: #E6DB74;">&quot;{name}&quot;</span><span>);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+                        
+                    </div>
+                    <div class="col">
+                        
+                            <h3>Simple query</h3>
+                            <hr />
+                            <p><p>Connect to the database, execute a query a tell witch data you want and its type. Elephantry does the rest!</p>
+</p>
+                            
+                                <p><a class="btn-outline theme-secondary" href="https://elephantry.github.io/documentation/quickstart/#primitive-types">Read more »</a></p>
+                            
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="even">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        
+                            <h3>Complex queries</h3>
+                            <hr />
+                            <p><p>You can write queries as complex as you like.</p>
+</p>
+                            
+                                <p><a class="btn-outline theme-primary" href="https://elephantry.github.io/documentation/quickstart/#complex-requests">Read more »</a></p>
+                            
+                        
+                    </div>
+                    <div class="col">
+                        
+                            <pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> elephantry</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Pool</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">new</span><span>(database_url)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> results</span><span style="color: #F92672;"> =</span><span> elephantry</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    .</span><span style="color: #A6E22E;">query</span><span style="color: #F92672;">::</span><span>&lt;(</span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>, </span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>)&gt;(</span><span style="color: #A6E22E;">include_str!</span><span>(</span><span style="color: #E6DB74;">&quot;query.sql&quot;</span><span>),</span><span style="color: #F92672;"> &amp;</span><span>[])</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F92672;">for</span><span> result</span><span style="color: #F92672;"> in</span><span> results {</span></span>
+<span class="giallo-l"><span style="color: #A6E22E;">    println!</span><span>(</span><span style="color: #E6DB74;">&quot;{:result?}&quot;</span><span>);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="sql"><span class="giallo-l"><span style="color: #F92672;">with</span><span> ranking </span><span style="color: #F92672;">as</span><span> (</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    select</span><span style="color: #AE81FF;"> department</span><span>.</span><span style="color: #AE81FF;">name</span><span style="color: #F92672;"> as</span><span> department,</span></span>
+<span class="giallo-l"><span style="color: #AE81FF;">        employee</span><span>.</span><span style="color: #AE81FF;">first_name</span><span style="color: #F92672;"> ||</span><span style="color: #E6DB74;"> &#39; &#39;</span><span style="color: #F92672;"> ||</span><span style="color: #AE81FF;"> employee</span><span>.</span><span style="color: #AE81FF;">last_name</span><span style="color: #F92672;"> as name</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;">        rank</span><span>() </span><span style="color: #F92672;">over</span><span> (</span><span style="color: #F92672;">partition by</span><span> department </span><span style="color: #F92672;">order by</span><span> day_salary)</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    from</span><span> employee</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    join</span><span> department</span></span>
+<span class="giallo-l"><span style="color: #F92672;">        on</span><span style="color: #AE81FF;"> department</span><span>.</span><span style="color: #AE81FF;">department_id</span><span style="color: #F92672;"> =</span><span style="color: #AE81FF;"> employee</span><span>.</span><span style="color: #AE81FF;">department_id</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    order by</span><span> department, rank</span></span>
+<span class="giallo-l"><span>)</span></span>
+<span class="giallo-l"><span style="color: #F92672;">select row</span><span>(department, </span><span style="color: #F92672;">name</span><span>) </span><span style="color: #F92672;">from</span><span> ranking</span></span></code></pre>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="odd">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        
+                            <pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span>#[derive(</span><span style="color: #A6E22E;text-decoration: underline;">Debug</span><span>, elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Entity</span><span>)]</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">struct</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Employee</span><span> {</span></span>
+<span class="giallo-l"><span>    id</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">i32</span><span>,</span></span>
+<span class="giallo-l"><span>    name</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>,</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> employees</span><span style="color: #F92672;"> =</span><span> elephantry</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    .</span><span style="color: #A6E22E;">query</span><span style="color: #F92672;">::</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Employee</span><span>&gt;(</span><span style="color: #E6DB74;">&quot;select id, name from employee&quot;</span><span>,</span><span style="color: #F92672;"> &amp;</span><span>[])</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F92672;">for</span><span> employee</span><span style="color: #F92672;"> in</span><span> employees {</span></span>
+<span class="giallo-l"><span style="color: #A6E22E;">    dbg!</span><span>(employee);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+                        
+                    </div>
+                    <div class="col">
+                        
+                            <h3>Entity</h3>
+                            <hr />
+                            <p><p>Instead of retreive fields one by one, you can aggregate a row of result in a <code>struct</code>.</p>
+</p>
+                            
+                                <p><a class="btn-outline theme-secondary" href="https://elephantry.github.io/documentation/quickstart/#entity">Read more »</a></p>
+                            
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="even">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        
+                            <h3>Write data</h3>
+                            <hr />
+                            <p><p>You can easily retreive, create, update or delete entity with the model approach.</p>
+<p>The <a rel="noopener external" target="_blank" href="https://crates.io/crates/elephantry-cli">cli</a> helps you to generate entities from your database schema.</p>
+</p>
+                            
+                                <p><a class="btn-outline theme-primary" href="https://elephantry.github.io/documentation/quickstart/#modification">Read more »</a></p>
+                            
+                        
+                    </div>
+                    <div class="col">
+                        
+                            <pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span>#[derive(elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Entity</span><span>)]</span></span>
+<span class="giallo-l"><span>#[elephantry(model </span><span style="color: #F92672;">=</span><span style="color: #E6DB74;"> &quot;Model&quot;</span><span>, structure </span><span style="color: #F92672;">=</span><span style="color: #E6DB74;"> &quot;Structure&quot;</span><span>)]</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">struct</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Entity</span><span> {</span></span>
+<span class="giallo-l"><span>    #[elephantry(pk)]</span></span>
+<span class="giallo-l"><span>    id</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">i32</span><span>,</span></span>
+<span class="giallo-l"><span>    name</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>,</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>elephantry</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">find_all</span><span style="color: #F92672;">::</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Model</span><span>&gt;(</span><span style="color: #A6E22E;text-decoration: underline;">Some</span><span>(</span><span style="color: #E6DB74;">&quot;order by name&quot;</span><span>))</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span>elephantry</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">insert_one</span><span style="color: #F92672;">::</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Model</span><span>&gt;(entity)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span>elephantry</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">update_one</span><span style="color: #F92672;">::</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Model</span><span>&gt;(</span><span style="color: #A6E22E;">pk!</span><span>{id</span><span style="color: #F92672;"> =&gt;</span><span> entity</span><span style="color: #F92672;">.</span><span>id}, entity)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span>elephantry</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">delete_one</span><span style="color: #F92672;">::</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Model</span><span>&gt;(entity)</span><span style="color: #F92672;">?</span><span>;</span></span></code></pre>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="odd">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        
+                            <pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #88846F;">// config-support</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span style="color: #F92672;"> mut</span><span> config</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">config</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Config</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">new</span><span>();</span></span>
+<span class="giallo-l"><span>config</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">merge</span><span>(</span><span style="color: #A6E22E;text-decoration: underline;">config</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Environment</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">with_prefix</span><span>(</span><span style="color: #E6DB74;">&quot;DATABASE&quot;</span><span>))</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> elephantry</span><span style="color: #F92672;"> =</span></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Pool</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">from_config</span><span>(</span><span style="color: #F92672;">&amp;</span><span>config</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">try_into</span><span>()</span><span style="color: #F92672;">?</span><span>)</span><span style="color: #F92672;">?</span><span>;</span></span></code></pre><pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #88846F;">// r2d2</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> manager</span><span style="color: #F92672;"> =</span></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">r2d2</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">ConnectionManager</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">new</span><span>(</span><span style="color: #F92672;">&amp;</span><span>database_url);</span></span></code></pre><pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="toml"><span class="giallo-l"><span style="color: #88846F;"># rocket</span></span>
+<span class="giallo-l"><span>[global.databases.elcaro]</span></span>
+<span class="giallo-l"><span>url =</span><span style="color: #E6DB74;"> &quot;postgresql://localhost/elcaro&quot;</span></span></code></pre>
+                        
+                    </div>
+                    <div class="col">
+                        
+                            <h3>Ecosystem</h3>
+                            <hr />
+                            <p><p>By enabling the corresponding feature (<code>config-support</code>, <code>r2d2</code> or <code>rocket</code>), elephantry can easily integrate the rust ecosystem.</p>
+</p>
+                            
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="even">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        
+                            <h3>More…</h3>
+                            <hr />
+                            <p><p>Elephantry supports async queries and have a transaction helper.</p>
+</p>
+                            
+                                <p><a class="btn-outline theme-primary" href="https://elephantry.github.io/documentation/quickstart/#more">Read more »</a></p>
+                            
+                        
+                    </div>
+                    <div class="col">
+                        
+                            <pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> r#async</span><span style="color: #F92672;"> =</span><span> elephantry</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">r#async</span><span>();</span></span>
+<span class="giallo-l"><span>r#async</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">execute</span><span>(</span><span style="color: #E6DB74;">&quot;select * from department&quot;</span><span>)</span><span style="color: #F92672;">.await?</span><span>;</span></span></code></pre><pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">let</span><span> transaction</span><span style="color: #F92672;"> =</span><span> elephantry</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">transaction</span><span>();</span></span>
+<span class="giallo-l"><span>transaction</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">start</span><span>()</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #88846F;">// …</span></span>
+<span class="giallo-l"><span>transaction</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">commit</span><span>()</span><span style="color: #F92672;">?</span><span>;</span></span></code></pre>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>&copy; 2020 - 2022 <a href="https://github.com/orgs/elephantry/people">The elephantry team</a>.</p>
+            </div>
+        </footer>
+
+        <script type="module">
+            import { Drawer } from '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'
+
+            const drawerElementList = document.querySelectorAll('dialog.drawer')
+            const drawerList = [...drawerElementList].map(drawerEl => new Drawer(drawerEl))
+        </script>
+    </body>
+</html>

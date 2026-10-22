@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            Elephantry - When Rust meets PostgreSQL
+            
+                | Create a new type
+            
+            
+        </title>
+        <link rel="icon" type="image/png" href="/favicon.ico" sizes="32x32" />
+        <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="/site.css" />
+    </head>
+    <body>
+        <nav class="navbar md:navbar-expand bg-1" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Elephantry</a>
+
+                <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="drawer" data-bs-target="#navbarDrawer" aria-controls="navbarDrawer" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon" aria-hidden="true"></span>
+                </button>
+
+                <dialog class="drawer drawer-end" tabindex="-1" id="navbarDrawer" aria-labelledby="navbarDrawerLabel">
+                    <div class="drawer-header">
+                        <h5 class="drawer-title" id="navbarDrawerLabel">Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="drawer" aria-label="Close"></button>
+                    </div>
+                    <div class="drawer-body  mb-2 md:mb-0">
+                        <ul class="nav navbar-nav me-auto">
+                            <li class="nav-item">
+                                <button class="nav-link" href="#" data-bs-toggle="menu" aria-expanded="false">Docs</button>
+
+                                <div class="menu">
+                                    
+                                    
+                                        <a class="menu-item" href="https://elephantry.github.io/documentation/quickstart/">Quickstart</a>
+                                    
+                                        <a class="menu-item" href="https://elephantry.github.io/documentation/new-type/">Create a new type</a>
+                                    
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ext" target="_blank" href="https://docs.rs/elephantry/">API</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ext" target="_blank" href="https://github.com/elephantry/elephantry">Code</a>
+                            </li>
+                        </ul>
+                    </div>
+                </dialog>
+            </div>
+        </nav>
+
+        <main role="main">
+            
+<div class="documentation">
+    <aside class="sidebar">
+        <ul>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/new-type/#type-information">Type information</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/new-type/#text-conversion">Text conversion</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/new-type/#binary-conversion">Binary conversion</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/new-type/#entity">Entity</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/new-type/#fromtext-totext">FromText/ToText</a>
+                </li>
+            
+                <li>
+                    <a href="https://elephantry.github.io/documentation/new-type/#tests">Tests</a>
+                </li>
+            
+        </ul>
+    </aside>
+
+    <div class="container">
+        <h1 class="text-center display-4 fw-bold">Create a new type</h1>
+        <p>To add a new type conversion, you need to implement two traits:
+<code>elephantry::ToSql</code> and <code>elephantry::FromSql</code> which convert a rust value to its
+postgresql representation and vis versa.</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">pub</span><span style="color: #66D9EF;font-style: italic;"> trait</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">FromSql</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Sized</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    fn</span><span style="color: #A6E22E;"> from_text</span><span>(ty</span><span style="color: #F92672;">: &amp;</span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span>, raw</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #F92672;">&amp;</span><span style="color: #A6E22E;text-decoration: underline;">str</span><span>&gt;)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #FD971F;">Self</span><span>&gt;;</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    fn</span><span style="color: #A6E22E;"> from_binary</span><span>(ty</span><span style="color: #F92672;">: &amp;</span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span>, raw</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #F92672;">&amp;</span><span>[</span><span style="color: #A6E22E;text-decoration: underline;">u8</span><span>]&gt;)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #FD971F;">Self</span><span>&gt;;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F92672;">pub</span><span style="color: #66D9EF;font-style: italic;"> trait</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">ToSql</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    fn</span><span style="color: #A6E22E;"> ty</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    fn</span><span style="color: #A6E22E;"> to_text</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>&gt;&gt;;</span></span>
+<span class="giallo-l"><span style="color: #F92672;">    fn</span><span style="color: #A6E22E;"> to_binary</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Vec</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">u8</span><span>&gt;&gt;&gt;;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Both traits have text and binary versions<sup class="footnote-reference" id="fr-1-1"><a href="#fn-1">[1]</a></sup>.</p>
+<p>For this tutorial, we’ll implement step by step these traits to convert the
+<code>ltree</code> type. According to the <a rel="noopener external" target="_blank" href="https://www.postgresql.org/docs/current/ltree.html">postgresql
+documentation</a>, <code>ltree</code> is:</p>
+<blockquote>
+<p>A label path is a sequence of zero or more labels separated by dots, for
+example L1.L2.L3, representing a path from the root of a hierarchical tree to
+a particular node. The length of a label path cannot exceed 65535 labels.</p>
+<p>Example: Top.Countries.Europe.Russia</p>
+</blockquote>
+<p>The first step is to determine the best rust representation for this type. Here
+I choose a custom type that contains a <code>Vec&lt;String&gt;</code>:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span>#[derive(</span><span style="color: #A6E22E;text-decoration: underline;">Default</span><span>)]</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">struct</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Ltree</span><span>(</span><span style="color: #A6E22E;text-decoration: underline;">Vec</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>&gt;);</span></span></code></pre>
+<p>Why? First, <code>Vec&lt;T&gt;</code> already implements these traits where <code>T</code> implements its
+(and <code>String</code> does). Second, the <code>Vec</code> type has similar operators to <code>ltree</code>.</p>
+<p>Now we need to implement traits.</p>
+<p>A good place to start is with the server-side C implementation, of these
+functions. For the core types, you can find code in <code>src/backend/utils/adt</code>, but
+here it’s an extension and code can be found in
+<a rel="noopener external" target="_blank" href="https://github.com/postgres/postgres/blob/REL_14_STABLE/contrib/ltree/ltree_io.c"><code>contrib/ltree/ltree_io.c</code></a>.</p>
+<p>On the postgres side, we also have 4 functions:</p>
+<ul>
+<li><code>*_in</code> → <code>to_text</code>;</li>
+<li><code>*_out</code> → <code>from_text</code>;</li>
+<li><code>*_recv</code> → <code>to_binary</code>;</li>
+<li><code>*_send</code> → <code>from_binary</code>.</li>
+</ul>
+<p>The text version is the easier to implement, as long as you understand C…</p>
+<h1 id="type-information">Type information</h1>
+<p>Before implementing the conversion, we define your type information, the
+<code>ToSql::ty()</code> function.</p>
+<p>This information is used for query parameters and error messages.</p>
+<p>All built-in types have this information in <a rel="noopener external" target="_blank" href="https://github.com/postgres/postgres/blob/REL_14_STABLE/src/include/catalog/pg_type.dat">postgresql
+sources</a>.</p>
+<p>Your type comes with an extension and we need to create this information. By
+default, <code>elephantry::pq::types::UNKNOWN</code> is a good placeholder:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">fn</span><span style="color: #A6E22E;"> ty</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span> {</span></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span> {</span></span>
+<span class="giallo-l"><span>        descr</span><span style="color: #F92672;">:</span><span style="color: #E6DB74;"> &quot;LQUERY - data type for hierarchical tree-like structures&quot;</span><span>,</span></span>
+<span class="giallo-l"><span>        name</span><span style="color: #F92672;">:</span><span style="color: #E6DB74;"> &quot;lquery&quot;</span><span>,</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #F92672;">        ..</span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">types</span><span style="color: #F92672;">::</span><span style="color: #AE81FF;">UNKNOWN</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><h1 id="text-conversion">Text conversion</h1>
+<p>Converting a <code>Ltree</code> to the postgresql text representation consists of
+concatenating all elements with dots:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="sql"><span class="giallo-l"><span style="color: #F92672;">select</span><span style="color: #E6DB74;"> &#39;Top.Countries.Europe.Russia&#39;</span><span>::ltree;</span></span></code></pre><pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">fn</span><span style="color: #A6E22E;"> to_text</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>&gt;&gt; {</span></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">Ok</span><span>(</span><span style="color: #A6E22E;text-decoration: underline;">Some</span><span>(</span><span style="color: #FD971F;">self</span><span style="color: #F92672;">.</span><span style="color: #AE81FF;">0.</span><span style="color: #A6E22E;">join</span><span>(</span><span style="color: #E6DB74;">&quot;.&quot;</span><span>)))</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>This function returns an <code>Option</code> for null value, we always returns <code>Some</code>, this
+case is threatened by the <code>Option</code> conversion implementations.</p>
+<p>If an error occurs during the conversion, you can use the <code>ToSql::error()</code>
+function to return an <code>elephantry::Result</code>.</p>
+<p>To reduce the boitelplate, you can delegate the <code>String</code> conversion to the
+appropriate trait implementations:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">fn</span><span style="color: #A6E22E;"> to_text</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">String</span><span>&gt;&gt; {</span></span>
+<span class="giallo-l"><span style="color: #FD971F;">    self</span><span style="color: #F92672;">.</span><span style="color: #AE81FF;">0.</span><span style="color: #A6E22E;">join</span><span>(</span><span style="color: #E6DB74;">&quot;.&quot;</span><span>)</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">to_text</span><span>()</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Well, as you can imagine the <code>from_text</code> is the opposite:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">fn</span><span style="color: #A6E22E;"> from_text</span><span>(ty</span><span style="color: #F92672;">: &amp;</span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span>, raw</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #F92672;">&amp;</span><span style="color: #A6E22E;text-decoration: underline;">str</span><span>&gt;)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #FD971F;">Self</span><span>&gt; {</span></span>
+<span class="giallo-l"><span style="color: #88846F;">    // 1</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span> s</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">String</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">from_text</span><span>(ty, raw)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #88846F;">    // 2</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span> ltree</span><span style="color: #F92672;"> = if</span><span> s</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">is_empty</span><span>() {</span></span>
+<span class="giallo-l"><span style="color: #FD971F;">        Self</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">default</span><span>()</span></span>
+<span class="giallo-l"><span>    }</span><span style="color: #F92672;"> else</span><span> {</span></span>
+<span class="giallo-l"><span style="color: #88846F;">        // 3</span></span>
+<span class="giallo-l"><span style="color: #FD971F;">        Self</span><span>(s</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">split</span><span>(</span><span style="color: #E6DB74;">&#39;.&#39;</span><span>)</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">map</span><span>(</span><span style="color: #A6E22E;text-decoration: underline;">ToString</span><span style="color: #F92672;">::</span><span>to_string)</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">collect</span><span>())</span></span>
+<span class="giallo-l"><span>    };</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">Ok</span><span>(ltree)</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<ol>
+<li>First, we need to convert the <code>raw</code> value into string. This deals with null
+value, so if <code>raw</code> is <code>null</code> here, it’s an error (the user should use the
+<code>Option&lt;Ltree&gt;</code> type;</li>
+<li>Second, we need to deal with empty string here, because splitting its made an
+one array element;</li>
+<li>Finally, just split the string and convert it to <code>String</code>.</li>
+</ol>
+<h1 id="binary-conversion">Binary conversion</h1>
+<p>Well, if you arrive here, you know all you need to know about implementing
+conversion. The second part is to do the same thing for the binary
+format and the hardest part is to understanding the C code, again…</p>
+<p>Here the <a rel="noopener external" target="_blank" href="https://github.com/postgres/postgres/blob/REL_14_STABLE/contrib/ltree/ltree_io.c#L188-L195">function
+comment</a>
+is useful and clearly explains how the value is sent:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="c"><span class="giallo-l"><span style="color: #88846F;">/*</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> * ltree type send function</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> *</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> * The type is sent as text in binary mode, so this is almost the same</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> * as the output function, but it&#39;s prefixed with a version number so we</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> * can change the binary format sent in future if necessary. For now,</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> * only version 1 is supported.</span></span>
+<span class="giallo-l"><span style="color: #88846F;"> */</span></span></code></pre>
+<p>If there is no comment, you can look for <code>pg_send*</code> calls in the code. Here:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="c"><span class="giallo-l"><span style="color: #A6E22E;">pq_sendint8</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;font-style: italic;">buf</span><span>, version);</span></span>
+<span class="giallo-l"><span style="color: #A6E22E;">pq_sendtext</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;font-style: italic;">buf</span><span>, res,</span><span style="color: #A6E22E;"> strlen</span><span>(res));</span></span></code></pre>
+<p>Postgresql sends:</p>
+<ul>
+<li>an <code>i8</code>: the binary format version (<code>1</code>);</li>
+<li>a <code>String</code>: the deparse version of the ltree (like the text version).</li>
+</ul>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">fn</span><span style="color: #A6E22E;"> to_binary</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span>)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">Vec</span><span>&lt;</span><span style="color: #A6E22E;text-decoration: underline;">u8</span><span>&gt;&gt;&gt; {</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span style="color: #F92672;"> mut</span><span> buf</span><span style="color: #F92672;"> =</span><span style="color: #A6E22E;"> vec!</span><span>[</span><span style="color: #AE81FF;">1</span><span>];</span></span>
+<span class="giallo-l"><span>    buf</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">extend_from_slice</span><span>(</span><span style="color: #F92672;">&amp;</span><span style="color: #FD971F;">self</span><span style="color: #F92672;">.</span><span style="color: #AE81FF;">0.</span><span style="color: #A6E22E;">join</span><span>(</span><span style="color: #E6DB74;">&quot;.&quot;</span><span>)</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">into_bytes</span><span>());</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">Ok</span><span>(</span><span style="color: #A6E22E;text-decoration: underline;">Some</span><span>(buf))</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Finally, to convert a value from postgresql to rust, it’s similar. Just skip
+the version number and the leading string can be parsed as the text version:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">fn</span><span style="color: #A6E22E;"> from_binary</span><span>(ty</span><span style="color: #F92672;">: &amp;</span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span>, raw</span><span style="color: #F92672;">:</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Option</span><span>&lt;</span><span style="color: #F92672;">&amp;</span><span>[</span><span style="color: #A6E22E;text-decoration: underline;">u8</span><span>]&gt;)</span><span style="color: #F92672;"> -&gt;</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Result</span><span>&lt;</span><span style="color: #FD971F;">Self</span><span>&gt; {</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span style="color: #F92672;"> mut</span><span> buf</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">from_sql</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">not_null</span><span>(raw)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span> _version</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">from_sql</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">read_i8</span><span>(</span><span style="color: #F92672;">&amp;mut</span><span> buf)</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">    let</span><span> s</span><span style="color: #F92672;"> =</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">String</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">from_binary</span><span>(ty, </span><span style="color: #A6E22E;text-decoration: underline;">Some</span><span>(buf))</span><span style="color: #F92672;">?</span><span>;</span></span>
+<span class="giallo-l"><span style="color: #FD971F;">    Self</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">from_text</span><span>(ty, </span><span style="color: #A6E22E;text-decoration: underline;">Some</span><span>(</span><span style="color: #F92672;">&amp;</span><span>s))</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>You can retreive the complete code
+<a rel="noopener external" target="_blank" href="https://github.com/elephantry/elephantry/blob/4.0.0/core/src/sql/ltree/mod.rs">here</a>.</p>
+<h1 id="entity">Entity</h1>
+<p>Well, now your type implements both <code>elephantry::FromSql</code> and
+<code>elephantry::ToSql</code> traits, we can implement the empty trait
+<code>elephantry::entity::Simple</code>:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #F92672;">impl</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">entity</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Simple</span><span style="color: #F92672;"> for</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">Ltree</span><span> {}</span></span></code></pre>
+<p>This trait implements the <code>elephantry::Entity</code> for you and allow using your type
+as a member to another entity.</p>
+<h1 id="fromtext-totext">FromText/ToText</h1>
+<p>If your type have the same representation as a string, in text <strong>and</strong> binary
+formats, you can use the <code>elephantry::FromText</code> and <code>elephantry::ToText</code> to
+simplify the implementation.</p>
+<h1 id="tests">Tests</h1>
+<p>Ideally, you should start by writing test for your new type, but it’s easier to
+understand now we saw the different parts of the implementation.</p>
+<p>With the <code>testing</code> features, you get the <code>convertion!</code> macro to write test:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(test)]</span></span>
+<span class="giallo-l"><span style="color: #66D9EF;font-style: italic;">mod</span><span> test {</span></span>
+<span class="giallo-l"><span>    </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">testing</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">convertion!</span><span> {</span></span>
+<span class="giallo-l"><span>        fixture</span><span style="color: #F92672;">:</span><span style="color: #E6DB74;"> &quot;test&quot;</span><span>,</span></span>
+<span class="giallo-l"><span>        sql_type</span><span style="color: #F92672;">:</span><span> ltree,</span></span>
+<span class="giallo-l"><span>        rust_type</span><span style="color: #F92672;">: crate::</span><span style="color: #A6E22E;text-decoration: underline;">Ltree</span><span>,</span></span>
+<span class="giallo-l"><span>        tests</span><span style="color: #F92672;">:</span><span> [</span></span>
+<span class="giallo-l"><span>            (</span><span style="color: #E6DB74;">&quot;&#39;&#39;&quot;</span><span>,</span><span style="color: #F92672;"> crate::</span><span style="color: #A6E22E;text-decoration: underline;">Ltree</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;">default</span><span>()),</span></span>
+<span class="giallo-l"><span>            (</span></span>
+<span class="giallo-l"><span style="color: #E6DB74;">                &quot;&#39;Top.Countries.Europe.Russia&#39;&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: #F92672;">                crate::</span><span style="color: #A6E22E;">Ltree</span><span>(</span><span style="color: #A6E22E;">vec!</span><span>[</span></span>
+<span class="giallo-l"><span style="color: #E6DB74;">                    &quot;Top&quot;</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">to_string</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #E6DB74;">                    &quot;Countries&quot;</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">to_string</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #E6DB74;">                    &quot;Europe&quot;</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">to_string</span><span>(),</span></span>
+<span class="giallo-l"><span style="color: #E6DB74;">                    &quot;Russia&quot;</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">to_string</span><span>()</span></span>
+<span class="giallo-l"><span>                ])</span></span>
+<span class="giallo-l"><span>            ),</span></span>
+<span class="giallo-l"><span>        ],</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>You can optionally add a fixture, by specified its path or just a name and the
+file should be located at <code>fixtures/{name}.sql</code>.</p>
+<p>I hope <code>sql_type</code> and <code>rust_type</code> parameters are transparent.</p>
+<p><code>tests</code> is an array of tuples with the SQL value and the rust version.</p>
+<p>This macro execute these queries and check if the result is the same after
+converting in rust:</p>
+<pre class="giallo" style="color: #F8F8F2; background-color: #272822;" ><code data-lang="rust"><span class="giallo-l"><span style="color: #88846F;">// from_text</span></span>
+<span class="giallo-l"><span>connection</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">execute</span><span style="color: #F92672;">::</span><span>&lt;{rust_type}&gt;(</span><span style="color: #E6DB74;">&quot;select {value}::{sql_type}&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #88846F;">// from_binary</span></span>
+<span class="giallo-l"><span>connection</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">query</span><span style="color: #F92672;">::</span><span>&lt;{rust_type}&gt;(</span><span style="color: #E6DB74;">&quot;select {value}::{sql_type}&quot;</span><span>);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #88846F;">// to_text</span></span>
+<span class="giallo-l"><span>connection</span><span style="color: #F92672;">.</span><span>mode </span><span style="color: #F92672;">=</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Text</span><span>;</span></span>
+<span class="giallo-l"><span>connection</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">query</span><span style="color: #F92672;">::</span><span>&lt;{rust_type}&gt;(</span><span style="color: #E6DB74;">&quot;select $1::{sql_type}&quot;</span><span>,</span><span style="color: #F92672;"> &amp;</span><span>[value]);</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #88846F;">// to_binary</span></span>
+<span class="giallo-l"><span>connection</span><span style="color: #F92672;">.</span><span>mode </span><span style="color: #F92672;">=</span><span> </span><span style="color: #A6E22E;text-decoration: underline;">elephantry</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">pq</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Type</span><span style="color: #F92672;">::</span><span style="color: #A6E22E;text-decoration: underline;">Binary</span><span>;</span></span>
+<span class="giallo-l"><span>connection</span><span style="color: #F92672;">.</span><span style="color: #A6E22E;">query</span><span style="color: #F92672;">::</span><span>&lt;{rust_type}&gt;(</span><span style="color: #E6DB74;">&quot;select $1::{sql_type}&quot;</span><span>,</span><span style="color: #F92672;"> &amp;</span><span>[value]);</span></span></code></pre>
+<p>Tests are overlapped, it could be a little tricky if you don’t know which
+function to start with.</p>
+<p>I recommend following this order:</p>
+<ul>
+<li><code>from_text</code>;</li>
+<li><code>from_binary</code>;</li>
+<li><code>to_text</code>;</li>
+<li><code>to_binary</code>.</li>
+</ul>
+<p>You can valid tests one after another, and text format is easier to implement,
+before writing the binary one.</p>
+<p>You can retrieve the complete code of this tutorial in the
+<a rel="noopener external" target="_blank" href="https://github.com/elephantry/elephantry/blob/5.0.0/core/examples/14-new-type.rs">14-new-type.rs</a> example.</p>
+<hr />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn-1">
+<p><code>ToSql::to_binary</code> is used for <code>Connection::copy</code> function,
+<code>ToSql::to_text</code> for all other query params. <code>FromSql::from_text</code> is used
+for <code>Connection::execute</code> and <code>FromSql::from_binary</code> for
+<code>Connection::query</code>. <a href="#fr-1-1">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+</div>
+
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>&copy; 2020 - 2022 <a href="https://github.com/orgs/elephantry/people">The elephantry team</a>.</p>
+            </div>
+        </footer>
+
+        <script type="module">
+            import { Drawer } from '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'
+
+            const drawerElementList = document.querySelectorAll('dialog.drawer')
+            const drawerList = [...drawerElementList].map(drawerEl => new Drawer(drawerEl))
+        </script>
+    </body>
+</html>
