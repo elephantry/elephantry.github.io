@@ -196,7 +196,7 @@ fn from_binary(ty: &elephantry::pq::Type, raw: Option<&[u8]>) -> elephantry::Res
 ```
 
 You can retreive the complete code
-[here](https://github.com/elephantry/elephantry/blob/4.0.0/core/src/sql/ltree/mod.rs).
+[here](https://github.com/elephantry/elephantry/blob/6.0.0/core/src/sql/ltree/mod.rs).
 
 # Entity
 
@@ -287,7 +287,7 @@ You can valid tests one after another, and text format is easier to implement,
 before writing the binary one.
 
 You can retrieve the complete code of this tutorial in the
-[14-new-type.rs](https://github.com/elephantry/elephantry/blob/5.0.0/core/examples/14-new-type.rs) example.
+[14-new-type.rs](https://github.com/elephantry/elephantry/blob/6.0.0/core/examples/14-new-type.rs) example.
 
 ---
 
