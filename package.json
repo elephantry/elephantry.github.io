@@ -1,6 +1,6 @@
 {
     "name": "elephantry",
     "dependencies": {
-        "bootstrap": "6.0.0-alpha.1"
+        "bootstrap": "6.0.0-alpha.2"
     }
 }
