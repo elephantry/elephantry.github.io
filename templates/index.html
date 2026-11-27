@@ -18,7 +18,10 @@
     </div>
 
     {% for page in section.pages %}
-        <div class="{% if loop.index is odd %}odd{% else %}even{% endif %}">
+    <div
+        class="page"
+        data-bs-theme="{% if loop.index is odd %}dark{% else %}light{% endif %}"
+    >
             <div class="container">
                 <div class="row">
                     <div class="col">
