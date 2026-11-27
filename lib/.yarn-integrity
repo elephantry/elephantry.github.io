@@ -1,0 +1,16 @@
+{
+  "systemParams": "linux-x64-137",
+  "modulesFolders": [
+    "static/lib"
+  ],
+  "flags": [],
+  "linkedModules": [],
+  "topLevelPatterns": [
+    "bootstrap@6.0.0-alpha.2"
+  ],
+  "lockfileEntries": {
+    "bootstrap@6.0.0-alpha.2": "https://registry.yarnpkg.com/bootstrap/-/bootstrap-6.0.0-alpha.2.tgz#fb4a67017a63817026d20b9246500d09280d4c47"
+  },
+  "files": [],
+  "artifacts": {}
+}

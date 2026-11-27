@@ -1,0 +1,100 @@
+@use "../mixins/focus-ring" as *;
+@use "../mixins/transition" as *;
+
+@layer components {
+  .combobox-control > .chip {
+    --chip-height: var(--combobox-control-chip-height);
+    --chip-border-radius: max(0px, calc(var(--control-border-radius) / 2));
+    --chip-padding-x: .5rem;
+    --chip-gap: .25rem;
+    --chip-dismiss-size: var(--combobox-control-chip-height);
+
+    > .chip-dismiss {
+      margin-inline: -.25rem -.5rem;
+
+      > svg {
+        width: .75rem;
+        height: .75rem;
+      }
+    }
+
+    &:focus-visible,
+    > .chip-dismiss:focus-visible {
+      @include focus-ring();
+    }
+  }
+
+  .combobox-control + .menu,
+  .combobox + .menu {
+    --menu-max-height: 300px;
+    --menu-overflow-y: auto;
+  }
+
+  .combobox-toggle {
+    display: inline-flex;
+    gap: .5rem;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+    padding-inline-end: var(--control-padding-x);
+    text-align: start;
+    cursor: pointer;
+
+    &.show {
+      background-color: var(--bg-1);
+    }
+
+    &:disabled,
+    &.disabled {
+      cursor: not-allowed;
+      opacity: var(--control-disabled-opacity);
+    }
+  }
+
+  .combobox-value {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .combobox-placeholder {
+    color: var(--control-placeholder-color);
+  }
+
+  .combobox-caret {
+    flex-shrink: 0;
+    @include transition(transform .2s ease-in-out);
+
+    .show > & {
+      transform: rotate(180deg);
+    }
+  }
+
+  .combobox-toggle + .menu {
+    --menu-max-height: 300px;
+    --menu-overflow-y: auto;
+  }
+
+  .combobox-search {
+    position: sticky;
+    inset-block-start: calc(-1 * var(--menu-padding-y, .25rem));
+    z-index: 1;
+    padding: var(--menu-padding-x, .25rem);
+    background-color: var(--menu-bg, var(--bg-body));
+  }
+
+  .combobox-search-input {
+    width: 100%;
+  }
+
+  .combobox-no-results {
+    padding: 1rem;
+    font-size: var(--font-size-sm);
+    color: var(--fg-3);
+    text-align: center;
+  }
+}

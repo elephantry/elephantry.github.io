@@ -1,0 +1,16 @@
+@use "../mixins/forced-colors" as *;
+
+@layer helpers {
+  .vr {
+    display: inline-block;
+    align-self: stretch;
+    width: var(--vr-border-width, var(--border-width));
+    min-height: 1em;
+    background-color: var(--border-color);
+
+    // Forced colors mode removes the background color. Show the rule with an outline.
+    @include forced-colors() {
+      outline: 1px solid transparent;
+    }
+  }
+}
